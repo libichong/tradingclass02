@@ -1,0 +1,26 @@
+{
+  "downloaded_on": "2026-10-11",
+  "method": "git clone --depth 1",
+  "sources": [
+    {
+      "name": "vnpy",
+      "url": "https://github.com/vnpy/vnpy.git",
+      "commit": "c6e231caf32b7fc97e6459817fff66458cf7e7c4",
+      "local_path": "raw\\vnpy"
+    },
+    {
+      "name": "vnpy_ctp",
+      "url": "https://github.com/vnpy/vnpy_ctp.git",
+      "commit": "1be9bfb5292208e5c258cc769c90be4abe83f9a9",
+      "local_path": "raw\\vnpy_ctp",
+      "package_version": "6.7.11.5"
+    },
+    {
+      "name": "vnpy_ctastrategy",
+      "url": "https://github.com/vnpy/vnpy_ctastrategy.git",
+      "commit": "7a8768de9784dda35a7b261a7ade1dbfbff50919",
+      "local_path": "raw\\vnpy_ctastrategy"
+    }
+  ],
+  "scope": "Read assignment-related event, data, routing, cache, CTP callbacks and CTA lifecycle paths; not a full source audit"
+}

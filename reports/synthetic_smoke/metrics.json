@@ -1,0 +1,562 @@
+{
+  "g01_gap": {
+    "train": {
+      "days": 176,
+      "eligible_calendar_days": 177,
+      "sufficient": true,
+      "mean_rank_ic": 0.4459417107282961,
+      "hac_95_ci": [
+        0.4286705291853479,
+        0.46321289227124424
+      ],
+      "positive_day_fraction": 1.0
+    },
+    "validation": {
+      "days": 87,
+      "eligible_calendar_days": 87,
+      "sufficient": true,
+      "mean_rank_ic": 0.44846994889047026,
+      "hac_95_ci": [
+        0.419804296386083,
+        0.4771356013948575
+      ],
+      "positive_day_fraction": 1.0
+    },
+    "test": {
+      "days": 87,
+      "eligible_calendar_days": 87,
+      "sufficient": true,
+      "mean_rank_ic": 0.43920553794397377,
+      "hac_95_ci": [
+        0.41613831873040286,
+        0.4622727571575447
+      ],
+      "positive_day_fraction": 1.0
+    }
+  },
+  "g02_gap_mean_3": {
+    "train": {
+      "days": 174,
+      "eligible_calendar_days": 177,
+      "sufficient": true,
+      "mean_rank_ic": 0.5595436803174398,
+      "hac_95_ci": [
+        0.5432937815331341,
+        0.5757935791017456
+      ],
+      "positive_day_fraction": 1.0
+    },
+    "validation": {
+      "days": 87,
+      "eligible_calendar_days": 87,
+      "sufficient": true,
+      "mean_rank_ic": 0.5767699639861119,
+      "hac_95_ci": [
+        0.5482668771506061,
+        0.6052730508216178
+      ],
+      "positive_day_fraction": 1.0
+    },
+    "test": {
+      "days": 87,
+      "eligible_calendar_days": 87,
+      "sufficient": true,
+      "mean_rank_ic": 0.5749045739794268,
+      "hac_95_ci": [
+        0.5548548287629506,
+        0.5949543191959031
+      ],
+      "positive_day_fraction": 1.0
+    }
+  },
+  "g03_gap_mean_5": {
+    "train": {
+      "days": 172,
+      "eligible_calendar_days": 177,
+      "sufficient": true,
+      "mean_rank_ic": 0.602298311444653,
+      "hac_95_ci": [
+        0.5879572728981777,
+        0.6166393499911282
+      ],
+      "positive_day_fraction": 1.0
+    },
+    "validation": {
+      "days": 87,
+      "eligible_calendar_days": 87,
+      "sufficient": true,
+      "mean_rank_ic": 0.6134566862910009,
+      "hac_95_ci": [
+        0.5860808595198815,
+        0.6408325130621203
+      ],
+      "positive_day_fraction": 1.0
+    },
+    "test": {
+      "days": 87,
+      "eligible_calendar_days": 87,
+      "sufficient": true,
+      "mean_rank_ic": 0.6197709775506243,
+      "hac_95_ci": [
+        0.6020889692261319,
+        0.6374529858751167
+      ],
+      "positive_day_fraction": 1.0
+    }
+  },
+  "g04_gap_mean_10": {
+    "train": {
+      "days": 167,
+      "eligible_calendar_days": 177,
+      "sufficient": true,
+      "mean_rank_ic": 0.6384873779645212,
+      "hac_95_ci": [
+        0.6247295606083078,
+        0.6522451953207345
+      ],
+      "positive_day_fraction": 1.0
+    },
+    "validation": {
+      "days": 87,
+      "eligible_calendar_days": 87,
+      "sufficient": true,
+      "mean_rank_ic": 0.6413922494662612,
+      "hac_95_ci": [
+        0.6143356995088793,
+        0.668448799423643
+      ],
+      "positive_day_fraction": 1.0
+    },
+    "test": {
+      "days": 87,
+      "eligible_calendar_days": 87,
+      "sufficient": true,
+      "mean_rank_ic": 0.6486985400357983,
+      "hac_95_ci": [
+        0.6335812240150128,
+        0.6638158560565838
+      ],
+      "positive_day_fraction": 1.0
+    }
+  },
+  "g05_gap_mean_20": {
+    "train": {
+      "days": 157,
+      "eligible_calendar_days": 177,
+      "sufficient": true,
+      "mean_rank_ic": 0.6584350091418602,
+      "hac_95_ci": [
+        0.643651975309709,
+        0.6732180429740113
+      ],
+      "positive_day_fraction": 1.0
+    },
+    "validation": {
+      "days": 87,
+      "eligible_calendar_days": 87,
+      "sufficient": true,
+      "mean_rank_ic": 0.6648271549028489,
+      "hac_95_ci": [
+        0.637403896654935,
+        0.6922504131507629
+      ],
+      "positive_day_fraction": 1.0
+    },
+    "test": {
+      "days": 87,
+      "eligible_calendar_days": 87,
+      "sufficient": true,
+      "mean_rank_ic": 0.666690388389295,
+      "hac_95_ci": [
+        0.6507239438927449,
+        0.682656832885845
+      ],
+      "positive_day_fraction": 1.0
+    }
+  },
+  "g06_gap_surprise": {
+    "train": {
+      "days": 156,
+      "eligible_calendar_days": 177,
+      "sufficient": true,
+      "mean_rank_ic": 0.002264636551690961,
+      "hac_95_ci": [
+        -0.018628655781353066,
+        0.023157928884734988
+      ],
+      "positive_day_fraction": 0.5064102564102564
+    },
+    "validation": {
+      "days": 87,
+      "eligible_calendar_days": 87,
+      "sufficient": true,
+      "mean_rank_ic": -0.009536132496603482,
+      "hac_95_ci": [
+        -0.04807231817903949,
+        0.02900005318583252
+      ],
+      "positive_day_fraction": 0.4827586206896552
+    },
+    "test": {
+      "days": 87,
+      "eligible_calendar_days": 87,
+      "sufficient": true,
+      "mean_rank_ic": 0.003500032347803584,
+      "hac_95_ci": [
+        -0.02976981595369957,
+        0.03676988064930674
+      ],
+      "positive_day_fraction": 0.5172413793103449
+    }
+  },
+  "g07_gap_zscore": {
+    "train": {
+      "days": 156,
+      "eligible_calendar_days": 177,
+      "sufficient": true,
+      "mean_rank_ic": 0.004168470678789625,
+      "hac_95_ci": [
+        -0.016780888667635,
+        0.02511783002521425
+      ],
+      "positive_day_fraction": 0.5128205128205128
+    },
+    "validation": {
+      "days": 87,
+      "eligible_calendar_days": 87,
+      "sufficient": true,
+      "mean_rank_ic": -0.009236376183390483,
+      "hac_95_ci": [
+        -0.048943974953214765,
+        0.030471222586433803
+      ],
+      "positive_day_fraction": 0.5172413793103449
+    },
+    "test": {
+      "days": 87,
+      "eligible_calendar_days": 87,
+      "sufficient": true,
+      "mean_rank_ic": 0.004196588384982,
+      "hac_95_ci": [
+        -0.02963550403923649,
+        0.03802868080920049
+      ],
+      "positive_day_fraction": 0.5172413793103449
+    }
+  },
+  "g08_gap_vol_scaled": {
+    "train": {
+      "days": 156,
+      "eligible_calendar_days": 177,
+      "sufficient": true,
+      "mean_rank_ic": 0.4510992447202579,
+      "hac_95_ci": [
+        0.4322250804911535,
+        0.46997340894936235
+      ],
+      "positive_day_fraction": 1.0
+    },
+    "validation": {
+      "days": 87,
+      "eligible_calendar_days": 87,
+      "sufficient": true,
+      "mean_rank_ic": 0.44874382696081605,
+      "hac_95_ci": [
+        0.4194051374871667,
+        0.4780825164344654
+      ],
+      "positive_day_fraction": 1.0
+    },
+    "test": {
+      "days": 87,
+      "eligible_calendar_days": 87,
+      "sufficient": true,
+      "mean_rank_ic": 0.43749757391473104,
+      "hac_95_ci": [
+        0.4152460401645459,
+        0.45974910766491617
+      ],
+      "positive_day_fraction": 1.0
+    }
+  },
+  "g09_gap_5_vol_scaled": {
+    "train": {
+      "days": 156,
+      "eligible_calendar_days": 177,
+      "sufficient": true,
+      "mean_rank_ic": 0.6014227642276422,
+      "hac_95_ci": [
+        0.5853877718560241,
+        0.6174577565992603
+      ],
+      "positive_day_fraction": 1.0
+    },
+    "validation": {
+      "days": 87,
+      "eligible_calendar_days": 87,
+      "sufficient": true,
+      "mean_rank_ic": 0.6134760949731514,
+      "hac_95_ci": [
+        0.5848585077544107,
+        0.642093682191892
+      ],
+      "positive_day_fraction": 1.0
+    },
+    "test": {
+      "days": 87,
+      "eligible_calendar_days": 87,
+      "sufficient": true,
+      "mean_rank_ic": 0.6172435358305839,
+      "hac_95_ci": [
+        0.5987475798931438,
+        0.635739491768024
+      ],
+      "positive_day_fraction": 1.0
+    }
+  },
+  "g10_gap_direction_5": {
+    "train": {
+      "days": 172,
+      "eligible_calendar_days": 177,
+      "sufficient": true,
+      "mean_rank_ic": 0.5606536847317272,
+      "hac_95_ci": [
+        0.5428966756687401,
+        0.5784106937947142
+      ],
+      "positive_day_fraction": 1.0
+    },
+    "validation": {
+      "days": 87,
+      "eligible_calendar_days": 87,
+      "sufficient": true,
+      "mean_rank_ic": 0.5716340101616101,
+      "hac_95_ci": [
+        0.5453961339739128,
+        0.5978718863493073
+      ],
+      "positive_day_fraction": 1.0
+    },
+    "test": {
+      "days": 87,
+      "eligible_calendar_days": 87,
+      "sufficient": true,
+      "mean_rank_ic": 0.5658896987564235,
+      "hac_95_ci": [
+        0.5509259456554246,
+        0.5808534518574223
+      ],
+      "positive_day_fraction": 1.0
+    }
+  },
+  "g11_gap_positive_share_10": {
+    "train": {
+      "days": 167,
+      "eligible_calendar_days": 177,
+      "sufficient": true,
+      "mean_rank_ic": 0.6061298083620225,
+      "hac_95_ci": [
+        0.5901702506820654,
+        0.6220893660419795
+      ],
+      "positive_day_fraction": 1.0
+    },
+    "validation": {
+      "days": 87,
+      "eligible_calendar_days": 87,
+      "sufficient": true,
+      "mean_rank_ic": 0.6156054291873055,
+      "hac_95_ci": [
+        0.5878402371829334,
+        0.6433706211916776
+      ],
+      "positive_day_fraction": 1.0
+    },
+    "test": {
+      "days": 87,
+      "eligible_calendar_days": 87,
+      "sufficient": true,
+      "mean_rank_ic": 0.6132504170066512,
+      "hac_95_ci": [
+        0.5953734721683664,
+        0.6311273618449359
+      ],
+      "positive_day_fraction": 1.0
+    }
+  },
+  "g12_gap_volume": {
+    "train": {
+      "days": 157,
+      "eligible_calendar_days": 177,
+      "sufficient": true,
+      "mean_rank_ic": 0.4272152579438582,
+      "hac_95_ci": [
+        0.407911389799277,
+        0.44651912608843936
+      ],
+      "positive_day_fraction": 1.0
+    },
+    "validation": {
+      "days": 87,
+      "eligible_calendar_days": 87,
+      "sufficient": true,
+      "mean_rank_ic": 0.4261542774578939,
+      "hac_95_ci": [
+        0.39745370351916526,
+        0.4548548513966226
+      ],
+      "positive_day_fraction": 1.0
+    },
+    "test": {
+      "days": 87,
+      "eligible_calendar_days": 87,
+      "sufficient": true,
+      "mean_rank_ic": 0.4218218282978585,
+      "hac_95_ci": [
+        0.397706647686458,
+        0.445937008909259
+      ],
+      "positive_day_fraction": 1.0
+    }
+  },
+  "g13_gap_volume_mean_5": {
+    "train": {
+      "days": 153,
+      "eligible_calendar_days": 177,
+      "sufficient": true,
+      "mean_rank_ic": 0.590861935768679,
+      "hac_95_ci": [
+        0.5753197012568931,
+        0.6064041702804648
+      ],
+      "positive_day_fraction": 1.0
+    },
+    "validation": {
+      "days": 87,
+      "eligible_calendar_days": 87,
+      "sufficient": true,
+      "mean_rank_ic": 0.5960578810032132,
+      "hac_95_ci": [
+        0.5680804993770594,
+        0.624035262629367
+      ],
+      "positive_day_fraction": 1.0
+    },
+    "test": {
+      "days": 87,
+      "eligible_calendar_days": 87,
+      "sufficient": true,
+      "mean_rank_ic": 0.6067520648681288,
+      "hac_95_ci": [
+        0.586651881357415,
+        0.6268522483788427
+      ],
+      "positive_day_fraction": 1.0
+    }
+  },
+  "g14_gap_intraday_confirm": {
+    "train": {
+      "days": 176,
+      "eligible_calendar_days": 177,
+      "sufficient": true,
+      "mean_rank_ic": 0.01025925294217977,
+      "hac_95_ci": [
+        -0.012247799814592624,
+        0.03276630569895216
+      ],
+      "positive_day_fraction": 0.5056818181818182
+    },
+    "validation": {
+      "days": 87,
+      "eligible_calendar_days": 87,
+      "sufficient": true,
+      "mean_rank_ic": 0.0067822561514739805,
+      "hac_95_ci": [
+        -0.028840071607073567,
+        0.042404583910021526
+      ],
+      "positive_day_fraction": 0.4827586206896552
+    },
+    "test": {
+      "days": 87,
+      "eligible_calendar_days": 87,
+      "sufficient": true,
+      "mean_rank_ic": 0.0050117530353022315,
+      "hac_95_ci": [
+        -0.030421387952015735,
+        0.0404448940226202
+      ],
+      "positive_day_fraction": 0.4942528735632184
+    }
+  },
+  "g15_gap_intraday_sum": {
+    "train": {
+      "days": 172,
+      "eligible_calendar_days": 177,
+      "sufficient": true,
+      "mean_rank_ic": 0.5533956542606571,
+      "hac_95_ci": [
+        0.5346548942151579,
+        0.5721364143061562
+      ],
+      "positive_day_fraction": 1.0
+    },
+    "validation": {
+      "days": 87,
+      "eligible_calendar_days": 87,
+      "sufficient": true,
+      "mean_rank_ic": 0.5774298591792283,
+      "hac_95_ci": [
+        0.5472876595923736,
+        0.607572058766083
+      ],
+      "positive_day_fraction": 1.0
+    },
+    "test": {
+      "days": 87,
+      "eligible_calendar_days": 87,
+      "sufficient": true,
+      "mean_rank_ic": 0.5819801168833969,
+      "hac_95_ci": [
+        0.5634554284714133,
+        0.6005048052953805
+      ],
+      "positive_day_fraction": 1.0
+    }
+  },
+  "g16_gap_intraday": {
+    "train": {
+      "days": 172,
+      "eligible_calendar_days": 177,
+      "sufficient": true,
+      "mean_rank_ic": 0.4015772939482526,
+      "hac_95_ci": [
+        0.37502234033954973,
+        0.42813224755695545
+      ],
+      "positive_day_fraction": 1.0
+    },
+    "validation": {
+      "days": 87,
+      "eligible_calendar_days": 87,
+      "sufficient": true,
+      "mean_rank_ic": 0.37266610597140454,
+      "hac_95_ci": [
+        0.3276963147330814,
+        0.41763589720972766
+      ],
+      "positive_day_fraction": 0.9885057471264368
+    },
+    "test": {
+      "days": 87,
+      "eligible_calendar_days": 87,
+      "sufficient": true,
+      "mean_rank_ic": 0.39054797179271533,
+      "hac_95_ci": [
+        0.36447176423265815,
+        0.4166241793527725
+      ],
+      "positive_day_fraction": 1.0
+    }
+  }
+}

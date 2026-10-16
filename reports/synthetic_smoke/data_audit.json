@@ -1,0 +1,11 @@
+{
+  "rows": 14400,
+  "symbols": 40,
+  "calendar_sessions": 360,
+  "first_date": "2016-01-01",
+  "last_date": "2017-05-18",
+  "missing_price_cells": 0,
+  "zero_volume_rows": 0,
+  "price_adjustment": "Caller must provide consistently adjusted OHLC; not inferred",
+  "universe": "Observed symbols only; survivorship/delistings require independent audit"
+}

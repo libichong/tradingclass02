@@ -1,0 +1,38 @@
+{
+  "date": "2026-10-11",
+  "python": "3.14.3",
+  "offline_tests": {
+    "command": "python -m unittest discover -s tests -v",
+    "passed": 22,
+    "failed": 0,
+    "scope": "CTP callback state and native-interface substitutes; gap features, labels, IC, selection, and synthetic pipeline"
+  },
+  "syntax": {
+    "command": "python -m compileall -q projects tests",
+    "passed": true
+  },
+  "editor_diagnostics": "No errors reported by the available problems tool",
+  "cli_help": {
+    "ctp_demo": "passed",
+    "gap_research": "passed"
+  },
+  "markdown_local_links": {
+    "files_checked": 19,
+    "broken": 0
+  },
+  "synthetic_pipeline": {
+    "path": "reports\\synthetic_smoke",
+    "status": "completed",
+    "candidate_count": 16,
+    "split_count": 3,
+    "implementation_sha256_matches": true,
+    "market_evidence": false
+  },
+  "not_verified": [
+    "Compatibility with the missing course llm-wiki.md",
+    "Installation and ABI of native vnpy_ctp on this interpreter",
+    "Live SimNow authentication, quotes, and reconnect behavior",
+    "Real market factor statistics, price adjustments, and historical universe"
+  ],
+  "orders_executed": 0
+}

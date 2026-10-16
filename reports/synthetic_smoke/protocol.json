@@ -1,0 +1,29 @@
+{
+  "round": 1,
+  "candidate_count": 16,
+  "label": "close_T_plus_3 / close_T_plus_1 - 1",
+  "selection": "highest_positive_training_mean_rank_ic",
+  "splits": {
+    "train": {
+      "start": "2016-01-01",
+      "end": "2016-09-08"
+    },
+    "validation": {
+      "start": "2016-09-09",
+      "end": "2017-01-12"
+    },
+    "test": {
+      "start": "2017-01-13",
+      "end": "2017-05-18"
+    }
+  },
+  "min_stocks": 30,
+  "min_days": {
+    "train": 60,
+    "validation": 20,
+    "test": 20
+  },
+  "hac_lag": 5,
+  "validation_mean_min": 0.01,
+  "validation_ci_lower_min": 0
+}

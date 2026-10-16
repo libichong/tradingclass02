@@ -1,0 +1,11 @@
+{
+  "status": "started",
+  "synthetic": true,
+  "data_sha256": "b8ce65c8f9bab8a3306f63ef5cb01398053095a6104b00b0521703d7a5ae1bdb",
+  "calendar_sha256": "0d6af356561409e7060f76b0b8b19e7994d85f5dea42bf7d2a351655006060cf",
+  "protocol_sha256": "73508e9f0fbb54605225fe757c12a58c9b6210aeac8c5fcd3a226070cfd02be5",
+  "implementation_sha256": "ad41b00f8f6ba25c6a45b9186faa973c2e992aa23d4856e54d58b6fba2164953",
+  "python": "3.14.3",
+  "numpy": "2.5.3",
+  "pandas": "3.0.6"
+}

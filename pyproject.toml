@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tradingclass02"
+version = "0.1.0"
+description = "Lesson two: read-only CTP demo and gap-factor research"
+requires-python = ">=3.11"
+dependencies = ["numpy>=2.1", "pandas>=2.2"]
+
+[project.optional-dependencies]
+ctp = ["vnpy_ctp==6.7.11.5"]
+
+[tool.setuptools.packages.find]
+include = ["projects*"]

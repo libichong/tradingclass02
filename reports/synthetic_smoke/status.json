@@ -1,0 +1,6 @@
+{
+  "status": "completed",
+  "selected": "g05_gap_mean_20",
+  "validation_pass": true,
+  "rule": "training only; validation gates deployment, test is descriptive"
+}

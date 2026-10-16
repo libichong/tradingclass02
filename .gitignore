@@ -218,3 +218,10 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Local upstream sources, market data, credentials, and CTP flow files
+raw/
+data/
+*.local.json
+.ctp-flow/
+reports/runs/
