@@ -12,5 +12,15 @@
   "min_days": {"train": 60, "validation": 20, "test": 20},
   "hac_lag": 5,
   "validation_mean_min": 0.01,
-  "validation_ci_lower_min": 0
+  "validation_ci_lower_min": 0,
+  "research_contract": {
+    "universe": "",
+    "adjustment": "",
+    "signal_time": "T close; all OHLCV inputs available after market close",
+    "execution_time": "Label only: T+1 close to T+3 close; not executable PnL",
+    "stop_rule": "One development evaluation; test opens once only after validation passes; no retuning",
+    "future_holdout": "",
+    "costs_and_constraints": "Not modeled: IC-only research, no net-return or deployability claim",
+    "previously_examined": "2019-2020 may have been examined in course reports; not a virgin future sample"
+  }
 }

@@ -4,12 +4,13 @@ from __future__ import annotations
 
 import argparse
 from dataclasses import dataclass
-from datetime import date
+from datetime import date, datetime, timezone
 import hashlib
 import json
 import math
 from pathlib import Path
 import platform
+import sys
 from typing import Mapping
 
 import numpy as np
@@ -53,8 +54,8 @@ class Protocol:
         lag = value["hac_lag"]
         if type(min_stocks) is not int or min_stocks < 3:
             raise ValueError("min_stocks must be an integer >= 3")
-        if type(lag) is not int or lag < 0:
-            raise ValueError("hac_lag must be a nonnegative integer")
+        if type(lag) is not int or lag < 2:
+            raise ValueError("hac_lag must be an integer >= 2 for overlapping two-session returns")
         if not isinstance(min_days, dict) or any(
             type(min_days.get(name)) is not int or min_days[name] < max(2, lag + 1)
             for name in ("train", "validation", "test")
@@ -214,13 +215,15 @@ def choose(metrics: Mapping[str, Mapping[str, dict[str, object]]]) -> str:
     return sorted(eligible, key=lambda entry: (-entry[0], entry[1]))[0][1]
 
 
-def evaluate(panel: Mapping[str, pd.DataFrame], protocol: Protocol) -> tuple[dict, dict, dict]:
+def evaluate(panel: Mapping[str, pd.DataFrame], protocol: Protocol, include_test: bool = False) -> tuple[dict, dict, dict]:
     candidates = factors(panel)
     if len(candidates) != 16:
         raise RuntimeError("Candidate count is not 16")
     metrics: dict[str, dict[str, dict[str, object]]] = {name: {} for name in candidates}
     daily: dict[str, pd.DataFrame] = {}
     for split in protocol.splits:
+        if split.name == "test":
+            continue
         target = labels(panel["close"], split)
         daily[split.name] = pd.DataFrame({
             name: rank_ic(feature, target, protocol.min_stocks)
@@ -239,12 +242,61 @@ def evaluate(panel: Mapping[str, pd.DataFrame], protocol: Protocol) -> tuple[dic
         passed = bool(validation["sufficient"] and isinstance(mean, float) and isinstance(interval, list)
                       and mean > protocol.validation_mean_min and interval[0] > 0)
         selection = {"selected": selected, "validation_pass": passed,
-                     "rule": "training only; validation gates deployment, test is descriptive"}
+                     "rule": "training only; validation gates test opening; test is descriptive"}
+        if include_test:
+            split = next(segment for segment in protocol.splits if segment.name == "test")
+            target = labels(panel["close"], split)
+            daily["test"] = pd.DataFrame({selected: rank_ic(candidates[selected], target, protocol.min_stocks)})
+            metrics[selected]["test"] = statistics(daily["test"][selected], protocol.hac_lag,
+                                                   protocol.min_days["test"])
+    selection["test_opened"] = "test" in daily
     return metrics, daily, selection
 
 
 def write_json(path: Path, value: object) -> None:
     path.write_text(json.dumps(value, ensure_ascii=False, indent=2, allow_nan=False) + "\n", encoding="utf-8")
+
+
+def input_identity(data: Path, calendar: Path, protocol: Path) -> dict[str, str]:
+    return {
+        "data_sha256": sha256(data), "calendar_sha256": sha256(calendar),
+        "protocol_sha256": sha256(protocol), "implementation_sha256": sha256(Path(__file__)),
+        "dependency_lock_sha256": sha256(Path(__file__).resolve().parents[2] / "requirements-lock.txt"),
+        "python": platform.python_version(), "numpy": np.__version__, "pandas": pd.__version__,
+    }
+
+
+def freeze_experiment(directory: Path, protocol_path: Path, identity: dict[str, str]) -> None:
+    Protocol.load(protocol_path)
+    value = json.loads(protocol_path.read_text(encoding="utf-8"))
+    contract = value.get("research_contract")
+    required = ("universe", "adjustment", "signal_time", "execution_time", "stop_rule",
+                "future_holdout", "costs_and_constraints", "previously_examined")
+    if not isinstance(contract, dict) or any(
+        not isinstance(contract.get(key), str) or not contract[key].strip() for key in required
+    ):
+        raise ValueError("Real research requires nonempty research_contract fields: " + ", ".join(required))
+    directory.mkdir(parents=True, exist_ok=False)
+    write_json(directory / "manifest.json", {
+        "schema": 1, "frozen_at": datetime.now(timezone.utc).isoformat(), "identity": identity,
+        "contract": contract, "command": sys.argv,
+    })
+    (directory / "protocol.json").write_bytes(protocol_path.read_bytes())
+
+
+def claim_stage(directory: Path, identity: dict[str, str], open_test: bool) -> Path:
+    frozen = json.loads((directory / "manifest.json").read_text(encoding="utf-8"))
+    if frozen.get("schema") != 1 or frozen.get("identity") != identity:
+        raise ValueError("Frozen input, implementation or runtime identity mismatch; do not overwrite the freeze")
+    if open_test:
+        development = json.loads((directory / "development.json").read_text(encoding="utf-8"))
+        if development.get("status") != "completed" or not development.get("validation_pass"):
+            raise ValueError("Test remains sealed: development must complete and pass frozen validation gates")
+    stage = directory / ("test.json" if open_test else "development.json")
+    with stage.open("x", encoding="utf-8") as stream:
+        json.dump({"status": "started", "started_at": datetime.now(timezone.utc).isoformat(),
+                   "command": sys.argv}, stream, ensure_ascii=False, indent=2)
+    return stage
 
 
 def render_report(metrics: dict, selection: dict, audit: dict, synthetic: bool) -> str:
@@ -255,6 +307,7 @@ def render_report(metrics: dict, selection: dict, audit: dict, synthetic: bool) 
         "",
         f"输入：{audit['symbols']} 个标的，{audit['rows']} 行；候选数：16。",
         f"训练期选中：`{selection['selected']}`；验证标准通过：{selection['validation_pass']}。",
+        f"历史测试已开封：{selection['test_opened']}（只报告训练期选中的候选）。",
         "",
         "| 因子 | 分段 | 有效日 | 日均排序相关 | HAC 95% 区间 |",
         "|---|---|---:|---:|---|",
@@ -266,7 +319,7 @@ def render_report(metrics: dict, selection: dict, audit: dict, synthetic: bool) 
             text_ci = "NA" if ci is None else f"[{ci[0]:.6f}, {ci[1]:.6f}]"
             rows.append(f"| {name} | {split} | {stat['days']} | {text_mean} | {text_ci} |")
     rows.extend([
-        "", "所有候选和无效结果均保留在 metrics.json；逐日 IC 在 daily_*.csv。",
+        "", "全部候选的开发期结果和无效结果均保留在 metrics.json；逐日 IC 在 daily_*.csv。",
         "无足够样本或无正向训练候选时明确不选因子；不得改看测试期后重新选择。",
         "g16 含日内反转，不是纯跳空延续；g14 方向确认也不等价于可交易动量。",
         "未处理真实成交、手续费、冲击、涨跌停、历史成分和独立复权审计。",
@@ -282,37 +335,65 @@ def main() -> int:
     parser.add_argument("--data", required=True, type=Path)
     parser.add_argument("--calendar", required=True, type=Path)
     parser.add_argument("--protocol", required=True, type=Path)
-    parser.add_argument("--output", required=True, type=Path)
+    parser.add_argument("--output", type=Path)
+    parser.add_argument("--freeze", type=Path, help="Local immutable experiment registry directory")
+    parser.add_argument("--freeze-only", action="store_true", help="Freeze identities without evaluating candidates")
+    parser.add_argument("--open-test", action="store_true", help="Explicit single-use historical test opening")
     parser.add_argument("--synthetic", action="store_true", help="Mark generated sample results as synthetic")
     args = parser.parse_args()
+    if args.synthetic and (args.freeze_only or args.freeze or args.open_test):
+        parser.error("Synthetic smoke runs cannot be used as real freeze/test-opening evidence")
+    if not args.synthetic and args.freeze is None:
+        parser.error("Real research requires --freeze; first run with --freeze-only")
+    if args.freeze_only and (args.open_test or args.output):
+        parser.error("--freeze-only cannot be combined with --open-test or --output")
+    if not args.freeze_only and args.output is None:
+        parser.error("Evaluation requires a new --output directory")
+    stage: Path | None = None
+    output_created = False
     try:
         protocol = Protocol.load(args.protocol)
-        panel, audit = load_panel(args.data, args.calendar)
-        # Freeze protocol and input identity before computing or selecting candidates.
+        identity = input_identity(args.data, args.calendar, args.protocol)
+        if args.freeze_only:
+            freeze_experiment(args.freeze, args.protocol, identity)
+            print(json.dumps({"status": "frozen_without_evaluation", "freeze": str(args.freeze)}))
+            return 0
+        if not args.synthetic:
+            stage = claim_stage(args.freeze, identity, args.open_test)
         args.output.mkdir(parents=True, exist_ok=False)
+        output_created = True
         write_json(args.output / "manifest.json", {
             "status": "started", "synthetic": args.synthetic,
-            "data_sha256": sha256(args.data), "calendar_sha256": sha256(args.calendar),
-            "protocol_sha256": sha256(args.protocol),
-            "implementation_sha256": sha256(Path(__file__)),
-            "python": platform.python_version(), "numpy": np.__version__, "pandas": pd.__version__,
+            **identity, "command": sys.argv, "test_requested": args.synthetic or args.open_test,
         })
         (args.output / "protocol.json").write_bytes(args.protocol.read_bytes())
+        panel, audit = load_panel(args.data, args.calendar)
         write_json(args.output / "data_audit.json", audit)
-        metrics, daily, selection = evaluate(panel, protocol)
+        metrics, daily, selection = evaluate(panel, protocol, include_test=args.synthetic or args.open_test)
+        if input_identity(args.data, args.calendar, args.protocol) != identity:
+            raise ValueError("Inputs changed during evaluation; results must not be used")
         write_json(args.output / "metrics.json", metrics)
         write_json(args.output / "selection.json", selection)
         for name, frame in daily.items():
             frame.to_csv(args.output / f"daily_{name}.csv", index_label="date")
         (args.output / "report.md").write_text(render_report(metrics, selection, audit, args.synthetic), encoding="utf-8")
-        completed = selection["selected"] is not None and all(
-            metrics[selection["selected"]][name]["sufficient"] for name in ("train", "validation", "test")
-        )
-        write_json(args.output / "status.json", {"status": "completed" if completed else "insufficient_evidence",
-                                               **selection})
+        selected = selection["selected"]
+        required_splits = ("train", "validation", "test") if selection["test_opened"] else ("train", "validation")
+        completed = selected is not None and all(
+            metrics[selected][name]["sufficient"] for name in required_splits)
+        status = {"status": "completed" if completed else "insufficient_evidence", **selection,
+                  "exit_code": 0 if completed else 2}
+        write_json(args.output / "status.json", status)
+        if stage is not None:
+            write_json(stage, {**status, "output": str(args.output.resolve())})
         print(json.dumps({"output": str(args.output), "sufficient_evidence": completed, **selection}, ensure_ascii=False))
         return 0 if completed else 2
     except (OSError, ValueError, KeyError, TypeError) as exc:
+        failure = {"status": "failed", "exit_code": 1, "error_type": type(exc).__name__}
+        if stage is not None:
+            write_json(stage, failure)
+        if output_created:
+            write_json(args.output / "status.json", failure)
         parser.exit(1, f"Research failed: {exc}\n")
 
 

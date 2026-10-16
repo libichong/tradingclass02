@@ -1,17 +1,25 @@
 {
-  "date": "2026-10-11",
+  "date": "2026-10-16",
   "python": "3.14.3",
   "offline_tests": {
     "command": "python -m unittest discover -s tests -v",
-    "passed": 22,
+    "passed": 37,
     "failed": 0,
-    "scope": "CTP callback state and native-interface substitutes; gap features, labels, IC, selection, and synthetic pipeline"
+    "exit_code": 0,
+    "scope": "CTP explicit network opt-in, redaction, fail-closed disconnects, per-symbol quote deadlines, callbacks and cleanup; factor formulas, label purge, HAC, real freeze/development/single-selected-test CLI lifecycle, failed-attempt preservation, synthetic pipeline"
   },
   "syntax": {
     "command": "python -m compileall -q projects tests",
-    "passed": true
+    "passed": true,
+    "exit_code": 0
   },
-  "editor_diagnostics": "No errors reported by the available problems tool",
+  "editor_diagnostics": "Pylance textDocument/diagnostic: no source errors in demo.py or research.py; no errors in either test file; unused fixture parameters reported as severity 4 hints in test_ctp_demo.py",
+  "dependency_check": {
+    "command": "python -m pip check",
+    "exit_code": 0,
+    "runtime_lock": "requirements-lock.txt",
+    "native_ctp_installed": false
+  },
   "cli_help": {
     "ctp_demo": "passed",
     "gap_research": "passed"
@@ -21,18 +29,34 @@
     "broken": 0
   },
   "synthetic_pipeline": {
-    "path": "reports\\synthetic_smoke",
+    "path": "reports\\runs\\review_20261016_synthetic",
     "status": "completed",
     "candidate_count": 16,
     "split_count": 3,
+    "test_candidate_count": 1,
+    "exit_code": 0,
     "implementation_sha256_matches": true,
-    "market_evidence": false
+    "market_evidence": false,
+    "generate_command": "python -m projects.gap_research.synthetic --output data\\review_20261016_synthetic",
+    "run_command": "python -m projects.gap_research.research --data data\\review_20261016_synthetic\\synthetic_prices.csv --calendar data\\review_20261016_synthetic\\synthetic_calendar.csv --protocol data\\review_20261016_synthetic\\synthetic_protocol.json --output reports\\runs\\review_20261016_synthetic --synthetic",
+    "historical_artifact": "reports\\synthetic_smoke retained unchanged; not current-code validation"
+  },
+  "credential_literal_check": {
+    "scope": "Tracked production Python/JSON literal UserID/password/AuthCode keys, including all reachable Git revisions; test fixtures excluded; REPLACE_ placeholders allowed",
+    "commits": 6,
+    "unique_path_content_pairs_checked": 32,
+    "suspect_paths": 0,
+    "exit_code": 0,
+    "exhaustive_secret_audit": false,
+    "history_rewritten": false,
+    "credentials_rotated": false
   },
   "not_verified": [
     "Compatibility with the missing course llm-wiki.md",
     "Installation and ABI of native vnpy_ctp on this interpreter",
-    "Live SimNow authentication, quotes, and reconnect behavior",
-    "Real market factor statistics, price adjustments, and historical universe"
+    "Live SimNow authentication, quote continuity, and disconnect behavior",
+    "Order persistence, attribution, fills, close fills, final zero position, and no active orders",
+    "Real market factor statistics, price adjustments, historical universe, execution costs and future holdout"
   ],
   "orders_executed": 0
 }

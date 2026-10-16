@@ -25,7 +25,7 @@ class Api(Protocol):
 
 @dataclass(frozen=True)
 class Config:
-    userid: str
+    userid: str = field(repr=False)
     password: str = field(repr=False)
     brokerid: str
     md_address: str
@@ -36,7 +36,10 @@ class Config:
 
     @classmethod
     def load(cls, path: Path) -> Config:
-        value = json.loads(path.read_text(encoding="utf-8"))
+        try:
+            value = json.loads(path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as exc:
+            raise ValueError(f"Invalid configuration JSON at line {exc.lineno}, column {exc.colno}") from None
         if not isinstance(value, dict):
             raise ValueError("Configuration must be a JSON object")
         keys = ("userid", "password", "brokerid", "md_address", "td_address", "appid", "auth_code")
@@ -100,6 +103,8 @@ class Session:
         self.subscribed: set[str] = set()
         self.tick_counts: dict[str, int] = {}
         self.valid_tick_counts: dict[str, int] = {}
+        self.started = time.monotonic()
+        self.last_valid_tick: dict[str, float] = {}
         self.apis: dict[str, Api] = {}
 
     def fail(self, operation: str, code: object) -> None:
@@ -137,6 +142,8 @@ class Session:
 
     def front_disconnected(self, channel: str, reason: int) -> None:
         with self.lock:
+            if self.closed:
+                return
             self.connected[channel] = False
             self.logged_in[channel] = False
             if channel == "md":
@@ -144,6 +151,7 @@ class Session:
             else:
                 self.authenticated = False
             self.recorder.emit("disconnected", channel=channel, reason=reason)
+            self.fail(f"{channel}.disconnected", reason)
 
     def response(self, channel: str, operation: str, error: Mapping[str, object], request_id: int) -> None:
         with self.lock:
@@ -199,6 +207,7 @@ class Session:
                 self.recorder.emit("invalid_tick", symbol=symbol, reason="invalid last price or missing time")
                 return
             self.valid_tick_counts[symbol] = self.valid_tick_counts.get(symbol, 0) + 1
+            self.last_valid_tick[symbol] = time.monotonic()
             self.recorder.emit(
                 "tick", symbol=symbol, last_price=price,
                 bid_price=valid_price(data.get("BidPrice1")),
@@ -210,7 +219,21 @@ class Session:
 
     def ready(self) -> bool:
         with self.lock:
-            return all(self.logged_in.values()) and self.authenticated and self.subscribed == set(self.config.symbols)
+            return (not self.failed and all(self.connected.values()) and all(self.logged_in.values())
+                    and self.authenticated and self.subscribed == set(self.config.symbols))
+
+    def check_health(self, now: float, startup_timeout: float, quote_timeout: float) -> None:
+        with self.lock:
+            if not self.ready() and now - self.started >= startup_timeout:
+                self.fail("startup_timeout", startup_timeout)
+            for symbol in self.config.symbols:
+                if now - self.last_valid_tick.get(symbol, self.started) >= quote_timeout:
+                    self.fail("quote_timeout", symbol)
+                    break
+
+    def has_all_quotes(self) -> bool:
+        with self.lock:
+            return all(self.valid_tick_counts.get(symbol, 0) > 0 for symbol in self.config.symbols)
 
     def summary(self) -> dict[str, object]:
         with self.lock:
@@ -222,7 +245,12 @@ class Session:
             }
 
 
-def run(config: Config, recorder: Recorder, duration: float | None, startup_timeout: float) -> int:
+def run(config: Config, recorder: Recorder, duration: float | None, startup_timeout: float,
+        quote_timeout: float = 60.0) -> int:
+    if any(not math.isfinite(value) or value <= 0 for value in (startup_timeout, quote_timeout)) or (
+        duration is not None and (not math.isfinite(duration) or duration <= 0)
+    ):
+        raise ValueError("Timeouts and duration must be finite positive seconds")
     try:
         from vnpy_ctp.api import MdApi, TdApi
     except ImportError as exc:
@@ -266,7 +294,7 @@ def run(config: Config, recorder: Recorder, duration: float | None, startup_time
             session.fail("td.callback", error.get("ErrorID", "unknown"))
 
     created: list[Api] = []
-    started = time.monotonic()
+    started = session.started
     try:
         md, td = QuoteApi(), TradeApi()
         session.apis.update(md=md, td=td)
@@ -282,18 +310,18 @@ def run(config: Config, recorder: Recorder, duration: float | None, startup_time
         td.registerFront(config.td_address)
         md.init()
         td.init()
-        ready_once = False
         while not session.stop.wait(0.2):
-            elapsed = time.monotonic() - started
-            ready_once = ready_once or session.ready()
-            if not ready_once and elapsed >= startup_timeout:
-                session.fail("startup_timeout", startup_timeout)
+            now = time.monotonic()
+            elapsed = now - started
+            session.check_health(now, startup_timeout, quote_timeout)
             if duration is not None and elapsed >= duration:
-                if not session.ready() or not sum(session.valid_tick_counts.values()):
+                if not session.ready() or not session.has_all_quotes():
                     session.fail("duration_ended_without_ready_session_and_quotes", duration)
                 break
     except KeyboardInterrupt:
         recorder.emit("stopping", reason="Ctrl+C")
+        if not session.ready() or not session.has_all_quotes():
+            session.fail("interrupted_without_ready_session_and_quotes", "incomplete")
     except (OSError, RuntimeError, ValueError) as exc:
         session.fail("native_initialization_or_run", type(exc).__name__)
         raise
@@ -326,18 +354,24 @@ def main() -> int:
     parser.add_argument("--config", type=Path, required=True)
     parser.add_argument("--duration", type=positive_seconds, help="Default: run until Ctrl+C")
     parser.add_argument("--startup-timeout", type=positive_seconds, default=30.0)
+    parser.add_argument("--quote-timeout", type=positive_seconds, default=60.0,
+                        help="Maximum seconds without a valid tick for each configured contract")
+    parser.add_argument("--live", action="store_true", help="Explicitly allow network login; never enables orders")
     parser.add_argument("--events", type=Path, help="New JSONL file, not overwritten")
     args = parser.parse_args()
+    if not args.live:
+        parser.error("Network access disabled by default; use --live only with your SimNow configuration")
     recorder = Recorder()
     try:
         config = Config.load(args.config)
         if args.events:
             args.events.parent.mkdir(parents=True, exist_ok=True)
             with args.events.open("x", encoding="utf-8") as stream:
-                return run(config, Recorder(stream), args.duration, args.startup_timeout)
-        return run(config, recorder, args.duration, args.startup_timeout)
+                return run(config, Recorder(stream), args.duration, args.startup_timeout, args.quote_timeout)
+        return run(config, recorder, args.duration, args.startup_timeout, args.quote_timeout)
     except (OSError, ValueError, RuntimeError) as exc:
-        recorder.emit("error", operation="main", detail=str(exc))
+        recorder.emit("error", operation="main", error_type=type(exc).__name__,
+                      detail="Check local configuration, paths and native dependency; raw exception suppressed")
         return 1
 
 

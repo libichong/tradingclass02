@@ -1,10 +1,10 @@
 {
-  "userid": "REPLACE_WITH_YOUR_SIMNOW_USER",
-  "password": "REPLACE_LOCALLY",
+  "userid": "",
+  "password": "",
   "brokerid": "9999",
   "md_address": "tcp://REPLACE_WITH_CURRENT_SIMNOW_HOST:30011",
   "td_address": "tcp://REPLACE_WITH_CURRENT_SIMNOW_HOST:30001",
-  "appid": "REPLACE_WITH_YOUR_APP_ID",
-  "auth_code": "REPLACE_LOCALLY",
+  "appid": "",
+  "auth_code": "",
   "symbols": ["au2612", "ag2612", "cu2611", "rb2701"]
 }

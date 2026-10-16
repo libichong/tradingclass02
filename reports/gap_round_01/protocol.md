@@ -15,6 +15,8 @@
 
 机器规则在 [protocol.json](protocol.json)，完整实现与列契约在 [研究说明](../../projects/gap_research/README.md)。
 
+2026-10-16 补充执行约束：真实运行前必须补全机器配置中的股票池、复权和未来样本说明，单独执行 `--freeze-only`。开发阶段不输出测试指标；仅在验证门槛通过后显式单次 `--open-test`，且只评价训练选中的候选。开发/开封失败也保留登记，不得删除重试。新增检查不意味着此前历史数据变成真正未查看样本。
+
 ## 16 个候选
 
 记 `G=log(open/previous_close)`，`I=log(close/open)`，`R=log(close/previous_close)`；`RV=volume/过去20日量均值`。基准均值、标准差、波动和量均值都只用 T-1 及之前数据；滚动候选可包括 T 收盘已知数据。
