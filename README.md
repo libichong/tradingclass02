@@ -7,12 +7,23 @@
 
 | 要求 | 本次交付 | 状态 |
 |---|---|---|
-| 学习 Wiki | [索引](wiki/index.md)、[维护日志](wiki/log.md) | 已建立；课程 `llm-wiki.md` 未提供，待对照 |
+| 学习 Wiki | [索引](wiki/index.md)、[维护规范](wiki/schema.md)、[维护日志](wiki/log.md) | 已接收用户提供的 LLM Wiki 指南，并补齐来源追溯与维护流程 |
 | 下载并阅读三个模块 | 本地 `raw` 源码、[提交记录](reports/source_commits.json)、[源码摘要](wiki/sources/vnpy.md) | 已下载并阅读作业相关链路 |
 | 底层 CTP 演示 | [程序与说明](projects/ctp_demo/README.md) | 只读登录/行情、显式联网和故障终止；原生扩展和联网未验证 |
 | 系统架构与三类策略 | [架构](wiki/concepts/architecture.md)、[策略比较](wiki/concepts/strategy-types.md) | 已整理 |
 | 突破价格后下单 | [待审核方案](wiki/code/order-plan.md) | 只交方案；未实现发单、未下单 |
 | 一轮 10–20 个跳空因子 | [16 个因子程序](projects/gap_research/README.md)、[事前方案](reports/gap_round_01/protocol.md) | 已实现冻结登记、分离开发与测试开封；真实数据与未来样本待提供 |
+
+### LLM Wiki 如何落地
+
+2026-10-16 收到用户提供的 `LLM Wiki` 原文，已建立[来源摘要与 SHA256 记录](wiki/sources/llm-wiki.md)。指南的重点是持续维护可累积的知识库，而不是每次问答都重新拼接原始材料。
+
+- **原始来源**：上游源码、原始数据和用户只读附件保持原样，记录版本或哈希；本次附件不复制全文入库，新克隆也不包含该附件。
+- **Wiki**：以[索引](wiki/index.md)串联来源摘要、概念和本次实现，引用证据、保留冲突并修正过时状态；可复用的问答回写到相关页面。
+- **Schema**：[维护规范](wiki/schema.md)约定目录、页面与证据边界，以及 Ingest（接收）、Query（问答回写）、Lint（核对）流程；它是项目说明，不声称所有 Agent 会自动加载。
+- **索引与日志分工**：索引按内容导航，[日志](wiki/log.md)按时间追加，历史记录不因当前状态变化而重写。当前规模无需额外安装 Obsidian、qmd 或向量检索服务。
+
+“指南已收到并完成首次对照”不等于真实数据或交易验收完成；剩余资料见[课程材料状态](wiki/sources/course-materials.md)。
 
 ## 对本轮反馈的处理（2026-10-16）
 
@@ -64,14 +75,16 @@ $LASTEXITCODE
 
 ### 因子研究
 
-真实数据接口与完整指令见 [研究说明](projects/gap_research/README.md)。以下只验证软件，不是市场数据：
+真实数据接口与完整指令见 [研究说明](projects/gap_research/README.md)。当前本地合成数据位于 `data\review_20261016_synthetic`，包含 `synthetic_prices.csv`、`synthetic_calendar.csv` 和 `synthetic_protocol.json`，无需重新生成。以下从仓库根目录使用现有数据复验软件，不是市场实证：
 
 ```powershell
-python -m projects.gap_research.synthetic --output data\synthetic_new
-python -m projects.gap_research.research --data data\synthetic_new\synthetic_prices.csv --calendar data\synthetic_new\synthetic_calendar.csv --protocol data\synthetic_new\synthetic_protocol.json --output reports\runs\synthetic_new --synthetic
+python -m projects.gap_research.research --data data\review_20261016_synthetic\synthetic_prices.csv --calendar data\review_20261016_synthetic\synthetic_calendar.csv --protocol data\review_20261016_synthetic\synthetic_protocol.json --output reports\runs\review_20261016_synthetic_rerun_01 --synthetic
+$LASTEXITCODE
 ```
 
-目录必须是新目录，禁止覆盖已有实验。仓库保存[早期合成冒烟证据](reports/synthetic_smoke/report.md)，不宣称因子有效。当前版本的 `--synthetic` 只为软件复验，可输出选中候选测试统计；不得对真实数据使用该标志来绕过冻结。
+输入目录可复用，**输出目录必须是新目录**；若示例的 `rerun_01` 已存在，请更换编号，禁止覆盖已有实验。现有本地结果位于 `reports\runs\review_20261016_synthetic`，其 `status.json` 记录 `completed`、退出码 0；本地输入与结果目录均被 Git 忽略，不会随克隆自动提供。若在新环境缺少样本，可先用 `python -m projects.gap_research.synthetic --output data\review_20261016_synthetic` 生成固定种子的合成数据，该生成命令也要求目标目录尚不存在。
+
+仓库保存[早期合成冒烟证据](reports/synthetic_smoke/report.md)，不宣称因子有效。当前版本的 `--synthetic` 只为软件复验，可输出选中候选测试统计；不得对真实数据使用该标志来绕过冻结。
 
 真实研究必须先补全[协议模板](reports/gap_round_01/protocol.json)中的股票池、复权口径和未来样本说明，再分开执行 `--freeze-only`、开发运行、`--open-test`。完整命令见[研究说明](projects/gap_research/README.md)。数据/协议/实现/依赖锁/运行版本改变会拒绝执行；同一登记的开发和测试各只允许一次，失败也保留。开发期保留全部 16 候选，测试只报告训练选中的项，不再输出全候选测试排名。
 
@@ -86,7 +99,7 @@ python -m projects.gap_research.research --data data\synthetic_new\synthetic_pri
 
 ## 交付边界
 
-- 尚未拿到课程 `llm-wiki.md`、课程原始行情、复权和历史股票池。
+- 已收到用户提供的 LLM Wiki 指南并完成首次对照；课程原始行情、复权资料和历史股票池仍未取得。
 - 没有本次 SimNow 登录或持续活跃合约的现场证据；配置中的合约仅为示例，需按运行日确认。
 - 未执行任何交易，也不包含复杂表达式、XGBoost 或 AutoGluon 扩展。
 - 一轮真实因子挖掘待数据到位；“最多四轮”不是必须四轮，本次不自动扩展搜索。

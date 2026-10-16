@@ -25,8 +25,19 @@
     "gap_research": "passed"
   },
   "markdown_local_links": {
-    "files_checked": 19,
+    "files_checked": 21,
     "broken": 0
+  },
+  "wiki_ingest": {
+    "date": "2026-10-16",
+    "source": "User-supplied read-only attachment: Pasted text #1.txt",
+    "source_sha256": "d1c5f89f21fc8f2671f0c5479ccfaadfbca1ce9fb441867172d0852529861169",
+    "source_summary": "wiki\\sources\\llm-wiki.md",
+    "schema": "wiki\\schema.md",
+    "wiki_pages_checked": 16,
+    "pages_missing_from_index": 0,
+    "source_modified": false,
+    "code_tests_rerun_for_documentation_update": false
   },
   "synthetic_pipeline": {
     "path": "reports\\runs\\review_20261016_synthetic",
@@ -52,7 +63,6 @@
     "credentials_rotated": false
   },
   "not_verified": [
-    "Compatibility with the missing course llm-wiki.md",
     "Installation and ABI of native vnpy_ctp on this interpreter",
     "Live SimNow authentication, quote continuity, and disconnect behavior",
     "Order persistence, attribution, fills, close fills, final zero position, and no active orders",
